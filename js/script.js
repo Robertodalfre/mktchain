@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('Página carregada');
 });
 
-// Controle do carrossel
 const isDesktop = window.matchMedia('(min-width: 768px)').matches;
 
 const wiperTrack = document.querySelector(".wiper-track");
@@ -49,12 +48,11 @@ wipePrevBtn.addEventListener("click", (e) => {
   arrowsBehaviour(wipePrevBtn, wipeNextBtn, targetIndex);
 });
 
-// Inicializar no segundo slide para desktop
 const initialIndex = 0;
 wipeSlide(wiperTrack, wipes[0], wipes[initialIndex], initialIndex);
 arrowsBehaviour(wipePrevBtn, wipeNextBtn, initialIndex);
 
-// Controle do formulário de contato
+// Configuração do formulário de contato
 const form = document.querySelector("#contato form");
 
 if (form) {
@@ -65,31 +63,45 @@ if (form) {
     const nome = document.querySelector("#nome").value;
     const email = document.querySelector("#email").value;
     const mensagem = document.querySelector("#mensagem").value;
+    const celular = document.querySelector("#celular").value;
 
-    // Simula o envio dos dados (aqui você pode substituir pelo envio para um backend)
-    console.log("Dados enviados:");
-    console.log({ nome, email, mensagem });
+    // Configuração do EmailJS
+    const serviceID = "";
+    const templateID = "";
+    const publicKey = "";
 
-    // Mostra uma mensagem de sucesso
-    const successMessage = document.createElement("div");
-    successMessage.textContent = "Mensagem enviada com sucesso! Entraremos em contato em breve.";
-    successMessage.style.backgroundColor = "#d4edda";
-    successMessage.style.color = "#155724";
-    successMessage.style.padding = "10px";
-    successMessage.style.border = "1px solid #c3e6cb";
-    successMessage.style.borderRadius = "5px";
-    successMessage.style.marginTop = "10px";
-    successMessage.style.textAlign = "center";
+    // Envio dos dados usando EmailJS
+    emailjs.init(publicKey);
 
-    // Insere a mensagem de sucesso antes do formulário
-    form.parentNode.insertBefore(successMessage, form);
+    emailjs.send(serviceID, templateID, {
+      nome,
+      email,
+      mensagem,
+      celular
+    })
+    .then(response => {
+      console.log("E-mail enviado com sucesso", response.status, response.text);
 
-    // Limpa os campos do formulário
-    form.reset();
+      const successMessage = document.createElement("div");
+      successMessage.textContent = "Mensagem enviada com sucesso! Entraremos em contato em breve.";
+      successMessage.style.backgroundColor = "#d4edda";
+      successMessage.style.color = "#155724";
+      successMessage.style.padding = "10px";
+      successMessage.style.border = "1px solid #c3e6cb";
+      successMessage.style.borderRadius = "5px";
+      successMessage.style.marginTop = "10px";
+      successMessage.style.textAlign = "center";
 
-    // Remove a mensagem após 5 segundos
-    setTimeout(() => {
-      successMessage.remove();
-    }, 5000);
+      form.parentNode.insertBefore(successMessage, form);
+      form.reset();
+
+      setTimeout(() => {
+        successMessage.remove();
+      }, 5000);
+    })
+    .catch(error => {
+      console.error("Erro ao enviar e-mail", error);
+      alert("Houve um problema ao enviar sua mensagem. Tente novamente mais tarde.");
+    });
   });
 }
